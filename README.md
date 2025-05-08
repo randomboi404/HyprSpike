@@ -1,2 +1,2 @@
 # HyprSpike
-My custom Arch Hyprland Docs.
+My custom Arch Hyprland Dots.
