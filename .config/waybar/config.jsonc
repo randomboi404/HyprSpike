@@ -4,7 +4,7 @@
   "height": 36,
   "spacing": 0,
   "margin": "5 15 0 15",
-  "modules-left": ["custom/separator","custom/arch", "hyprland/workspaces", "cpu#icon", "cpu#text", "memory#icon", "memory#text"],
+  "modules-left": ["custom/separator","custom/arch", "hyprland/workspaces"],
   "modules-center": ["custom/updates#icon","custom/updates#text", "hyprland/window", "custom/notification", "idle_inhibitor"],
   "modules-right": [
     "network#icon",
@@ -29,7 +29,7 @@
     "format": "",
     "tooltip": true,
     "tooltip-format": "I use Arch btw.",
-    "on-click": "rofi -show drun",
+    "on-click": "kitty btop",
     "interval": "once"
   },
 
@@ -102,6 +102,7 @@
     "rewrite": {
     "brave-browser": "Brave Browser",
     "discord": "Discord",
+    "vesktop": "Discord",
     "kitty": "Kitty",
     "librewolf": "LibreWolf",
     "thunar": "Thunar",
@@ -238,7 +239,8 @@
 
   "clock#icon": {
     "format": "󰥔",
-    "tooltip": false
+    "tooltip": false,
+    "on-click": "gnome-clocks"
   },
   
   /*"clock#text": {

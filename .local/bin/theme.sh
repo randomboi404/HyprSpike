@@ -1,7 +1,6 @@
 #!/bin/bash
 
 WALL_DIR="$HOME/Pictures/Wallpapers"
-
 CWD="$(pwd)"
 
 cd "$WALL_DIR" || exit 1

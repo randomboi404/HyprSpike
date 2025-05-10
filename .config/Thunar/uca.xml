@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+<action>
+	<icon>utilities-terminal</icon>
+	<name>Open Terminal Here</name>
+	<submenu></submenu>
+	<unique-id>1746725133718510-1</unique-id>
+	<command>kitty --working-directory %f</command>
+	<description>Opens Kitty in the working directory.</description>
+	<range></range>
+	<patterns>*</patterns>
+	<startup-notify/>
+	<directories/>
+</action>
+<action>
+	<icon></icon>
+	<name>Extract here</name>
+	<submenu></submenu>
+	<unique-id>1746779661684033-1</unique-id>
+	<command>unzip %f</command>
+	<description>Extracts a zip file.</description>
+	<range>*</range>
+	<patterns>*.zip</patterns>
+	<other-files/>
+</action>
+<action>
+	<icon></icon>
+	<name>Create tar.gz from folder</name>
+	<submenu></submenu>
+	<unique-id>1746779706704174-2</unique-id>
+	<command>tar czvf %n.tar.gz %n</command>
+	<description>Creates tar file from the selected folder.</description>
+	<range>*</range>
+	<patterns>*</patterns>
+	<directories/>
+</action>
+<action>
+	<icon></icon>
+	<name>Open as root</name>
+	<submenu></submenu>
+	<unique-id>1746779827956361-3</unique-id>
+	<command>sudo -E thunar</command>
+	<description>Opens thunar with root permissions.</description>
+	<range>*</range>
+	<patterns>*</patterns>
+	<directories/>
+</action>
+<action>
+	<icon></icon>
+	<name>Edit as root</name>
+	<submenu></submenu>
+	<unique-id>1746779873360151-4</unique-id>
+	<command>pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY dbus-launch kate %f</command>
+	<description>Edits the selected file as root.</description>
+	<range>*</range>
+	<patterns>*</patterns>
+	<text-files/>
+</action>
+<action>
+	<icon></icon>
+	<name>View Disk Usage</name>
+	<submenu></submenu>
+	<unique-id>1746779920088292-5</unique-id>
+	<command>baobab %f</command>
+	<description>Views the disk usage of the selected directory.</description>
+	<range>*</range>
+	<patterns>*</patterns>
+	<directories/>
+</action>
+<action>
+	<icon></icon>
+	<name>Set as wallpaper</name>
+	<submenu></submenu>
+	<unique-id>1746781827517629-1</unique-id>
+	<command>swww img %f &amp;&amp; wal -i %f</command>
+	<description>Sets the selected image as wallpaper.</description>
+	<range>*</range>
+	<patterns>*.jpg;*.jpeg;*.png;*.gif</patterns>
+	<image-files/>
+</action>
+</actions>
