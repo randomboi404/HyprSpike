@@ -12,3 +12,5 @@ notify-send "Changing Theme" "Applying new theme..."
 swww img "$IMAGE" --transition-type="fade" --transition-step=1 --transition-fps="60"
 
 wal -i "$IMAGE" -n -s -t -e
+
+matugen image "$IMAGE"

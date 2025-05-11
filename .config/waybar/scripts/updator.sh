@@ -83,10 +83,14 @@ if (( ofc + aur + fpk == 0 )); then
   exit
 fi
 
-trap 'pkill -SIGUSR2 waybar' EXIT
+trap 'pkill waybar && hyprctl dispatch exec waybar' EXIT
 
 command=$(cat <<EOF
 fastfetch
+
+printf '[Official]  $ofc\n'
+printf '[AUR]       $aur\n'
+printf '[Flatpak]   $fpk\n'
 
 if (( $ofc > 0 )); then
   sudo pacman -Syu

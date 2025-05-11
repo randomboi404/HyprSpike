@@ -10,8 +10,8 @@
   }
 
 #waybar {
-/*#background-color: #11151a;*/
-background: transparent;
+background-color: #11151a;
+/*background: transparent;*/
 color: #c0caf5;
 border-radius: 50px 50px 50px 50px;
 background-color: rgba(0, 0, 0, 0.3);
@@ -70,6 +70,14 @@ color: #1a1b26;
 #custom-separator {
 margin-right: 10px;
 margin-left: 10px;
+}
+
+#custom-cava {
+background-color: #24283b;
+font-family: monospace;
+padding: 0 12px;
+border-radius: 10px;
+margin: 5px;
 }
 
 #custom-arch {

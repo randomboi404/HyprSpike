@@ -4,7 +4,7 @@
   "height": 36,
   "spacing": 0,
   "margin": "5 15 0 15",
-  "modules-left": ["custom/separator","custom/arch", "hyprland/workspaces"],
+  "modules-left": ["custom/separator","custom/arch", "hyprland/workspaces", "custom/cava"],
   "modules-center": ["custom/updates#icon","custom/updates#text", "hyprland/window", "custom/notification", "idle_inhibitor"],
   "modules-right": [
     "network#icon",
@@ -51,6 +51,13 @@
   "persistent-workspaces": {
       		"eDP-1": [1, 2, 3, 9, 10]
     		}
+  },
+
+  "custom/cava": {
+    "exec": "~/.config/waybar/scripts/cava.sh hyprlock",
+    "restart-interval": 1,
+    "hide-empty": true,
+    "tooltip": false
   },
   
   "cpu#icon": {
@@ -106,6 +113,7 @@
     "kitty": "Kitty",
     "librewolf": "LibreWolf",
     "thunar": "Thunar",
+    "polkit-gnome-authentication-agent-1": "Authentication",
     "^$": "~@"
   },
     "max-length": 50
@@ -243,25 +251,10 @@
     "on-click": "gnome-clocks"
   },
   
-  /*"clock#text": {
-    "format": "{:%I:%M %p}",
-    "tooltip-format": "<tt><small>{calendar}</small></tt>",
-    "calendar": {
-      "format": {
-        "months": "<span color='#ffead3'><b>{}</b></span>",
-        "today": "<span color='#ff6699'><b>{}</b></span>"
-      }
-    }
-  }
-
-  ,
-    "tooltip": false
-  },*/
-  
-  
   "clock#text": {
     "format": "{:%I:%M %p}",
     "format-alt": "{:%a, %d %b}",
+    "signal": 3,
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
     "calendar": {
       "mode"          : "month",
