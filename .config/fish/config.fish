@@ -42,6 +42,11 @@ alias rmlck="sudo rm /var/lib/pacman/db.lck"
 
 alias spotx-flatpak="fish <(curl -sSL https://raw.githubusercontent.com/Nuzair46/BlockTheSpot-Linux/main/install.sh) -P /var/lib/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share/spotify/ -h";
 
+alias s="paru -Ss"
+alias i="paru -S"
+alias r="paru -Rns"
+alias dd="paru -Qdtq"
+
 zoxide init fish --cmd cd | source
 
 alias catbox="catbox-upload.sh"
