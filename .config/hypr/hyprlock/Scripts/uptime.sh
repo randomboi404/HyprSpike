@@ -1,0 +1,1 @@
+echo $(awk '{t=$1; d=int(t/86400); h=int(t%86400/3600); m=int(t%3600/60); s=int(t%60); out=""; if(d) out=out d" days, "; if(h || out) out=out h" hrs, "; if(m || out) out=out m" mins, "; out=out s" secs"; print out}' /proc/uptime)

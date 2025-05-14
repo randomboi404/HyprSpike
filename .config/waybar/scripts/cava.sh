@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 # Configuration
-CPU_LIMIT=50
+CPU_LIMIT=5
 SCRIPT_PID=$$
-TMP_DIR=${HYDE_RUNTIME_DIR:-/tmp}
+TMP_DIR="/tmp"
 
 help_msg() {
   cat <<HELP
@@ -18,16 +18,16 @@ HELP
 stdout() {
   local name="${cava_cmd:-stdout}"
   local cfg="${TMP_DIR}/cava.${name}"
-  
+
   # Kill any existing cava instances
   pkill -x cava >/dev/null 2>&1
-  
+
   # Parse arguments
   local bar="${cava_bar:-▁▂▃▄▅▆▇█}"
   local bar_length=${#bar}
   local bar_width=${cava_width:-$bar_length}
   local bar_range=${cava_range:-$((bar_length-1))}
-  
+
   # Generate cava config for 20 FPS
   cat >"$cfg" <<EOF
 [general]
@@ -52,7 +52,7 @@ EOF
     (( red>255 )) && red=255
     red_values[j]=$(printf "%02X" "$red")
   done
-  
+
   # Pre-generate character indices for idle bar
   declare -a idle_indices
   for ((j=0; j<bar_width; j++)); do
@@ -61,7 +61,7 @@ EOF
     (( idx<0 )) && idx=0
     idle_indices[j]=$idx
   done
-  
+
   # Build idle string - do this once, not every time
   build_idle() {
     local s=""
@@ -71,38 +71,38 @@ EOF
     done
     printf '%s' "$s"
   }
-  
+
   # Generate idle visualization once
   local idle_str=$(build_idle)
-  
+
   # Output idle immediately
   echo "$idle_str"
-  
+
   # Start cava in a coprocess to capture its PID
   coproc CAVAPROC { stdbuf -oL cava -p "$cfg"; }
   local cava_pid=$CAVAPROC_PID
-  
+
   # Limit CPU usage
   limitcpu -p "$cava_pid" -l $CPU_LIMIT &
   limitcpu -p "$SCRIPT_PID" -l $CPU_LIMIT &
-  
+
   # Process cava output
   local IFS=';'
   local -a levels
   while IFS= read -r line <&"${CAVAPROC[0]}"; do
     read -ra levels <<< "$line"
-    
+
     # Fast silence check
     local all_zero=1
     for l in "${levels[@]}"; do
       [[ "$l" -ne 0 ]] && { all_zero=0; break; }
     done
-    
+
     if (( all_zero )); then
       echo "$idle_str"
       continue
     fi
-    
+
     # Build mirrored, gradient-colored output efficiently
     local out=""
     for ((j=0; j<bar_width; j++)); do
@@ -112,15 +112,15 @@ EOF
       else
         lvl="${levels[bar_width-1-j]:-0}"
       fi
-      
+
       # Clamp level values
       (( lvl<0 )) && lvl=0
       (( lvl>bar_range )) && lvl=bar_range
-      
+
       # Use pre-computed color values
       out+="<span color=\"#${red_values[j]}0000\">${bar:lvl:1}</span>"
     done
-    
+
     echo "$out"
   done
 }

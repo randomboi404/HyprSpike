@@ -1,4 +1,3 @@
-require("workstation.core.options")
-require("workstation.core.keymaps")
-require("workstation.core.colorscheme")
-
+require("core.options")
+require("core.plugins")
+require("core.plugin_config")

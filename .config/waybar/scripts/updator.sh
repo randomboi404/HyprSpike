@@ -3,108 +3,99 @@
 AUR_HELPER="paru"
 UPDATES_DIR="/tmp/updates"
 
-# Create updates directory if it doesn't exist
+# Exit early on snapshot boots
+if grep -q 'subvol=@/.snapshots' /proc/cmdline; then
+  exit
+fi
+
 mkdir -p "$UPDATES_DIR"
 
-# Function to check for updates and always write to files
+# --- functions to update & cache ---
 check_and_write_updates() {
-  # Check for official updates
-  ofc=$(CHECKUPDATES_DB=$(mktemp -u) checkupdates | wc -l)
+  # Official repos
+  ofc=$(CHECKUPDATES_DB=$(mktemp -u) checkupdates \
+        | tee "$UPDATES_DIR/official_list" \
+        | wc -l)
   echo "$ofc" > "$UPDATES_DIR/official"
 
-  # Check for AUR updates
-  aur=$(${AUR_HELPER} -Qua | grep -v '\[ignored\]' | wc -l)
+  # AUR
+  aur=$($AUR_HELPER -Qua \
+        | grep -v '\[ignored\]' \
+        | tee "$UPDATES_DIR/aur_list" \
+        | wc -l)
   echo "$aur" > "$UPDATES_DIR/aur"
 
-  # Check for flatpak updates
+  # Flatpak
   if command -v flatpak >/dev/null 2>&1; then
-    fpk=$(flatpak remote-ls --updates | wc -l)
-    fpk_disp="\n Flatpak $fpk"
+    flatpak remote-ls --updates \
+      | tee "$UPDATES_DIR/flatpak_list" >/dev/null
+    fpk=$(wc -l < "$UPDATES_DIR/flatpak_list")
   else
     fpk=0
-    fpk_disp=""
+    : > "$UPDATES_DIR/flatpak_list"
   fi
-  # Always write flatpak count even if flatpak is not installed
   echo "$fpk" > "$UPDATES_DIR/flatpak"
 
   total=$((ofc + aur + fpk))
 }
 
-# Function to read updates from files if they exist
 read_updates_from_files() {
-  if [ -f "$UPDATES_DIR/official" ] && [ -f "$UPDATES_DIR/aur" ] && [ -f "$UPDATES_DIR/flatpak" ]; then
-    ofc=$(cat "$UPDATES_DIR/official")
-    aur=$(cat "$UPDATES_DIR/aur")
-    fpk=$(cat "$UPDATES_DIR/flatpak")
-    
-    if command -v flatpak >/dev/null 2>&1; then
-      fpk_disp="\n Flatpak $fpk"
-    else
-      fpk_disp=""
-    fi
-    
+  if [[ -f "$UPDATES_DIR/official" && -f "$UPDATES_DIR/aur" && -f "$UPDATES_DIR/flatpak" ]]; then
+    ofc=$(< "$UPDATES_DIR/official")
+    aur=$(< "$UPDATES_DIR/aur")
+    fpk=$(< "$UPDATES_DIR/flatpak")
     total=$((ofc + aur + fpk))
     return 0
   else
-    # If any file is missing, do a full check
     check_and_write_updates
     return 1
   fi
 }
 
-# For up command, try to read from files first
+# On 'up', try to reuse cache; otherwise always refresh
 if [[ "$1" == "up" ]]; then
   read_updates_from_files
 else
-  # For any other command, always check and write to files
   check_and_write_updates
 fi
 
+(( total == 0 )) && exit
+
 case "$1" in
   text)
-    if [ $total -ne 0 ]; then
-      echo "$total"
-    fi
+    tooltip=$(
+      cat "$UPDATES_DIR"/{official_list,aur_list,flatpak_list} 2>/dev/null \
+        | sed '/^$/d' \
+        | sed -z 's/\n/\\n/g' \
+        | sed -E "s/(^|\\\\n)([^ ]+)([^\\\\n]*)/\1\2<span color='#ff6699'>\3<\/span>/g" \
+        | sed -E 's/^(.*)\\n(.*)$/\1\2/'
+    )
+    echo "{\"text\": \"${total}\", \"tooltip\": \"<b>${tooltip}</b>\"}"
     exit
     ;;
   img)
-    if [ $total -ne 0 ]; then
-      echo "󰮯"
-    fi
+    echo "󰮯"
     exit
     ;;
 esac
 
-if [[ "$1" != "up" ]]; then
-  exit
-fi
-
-if (( ofc + aur + fpk == 0 )); then
+# Interactive upgrade popup
+if [[ "$1" != "up" ]] || (( total == 0 )); then
   exit
 fi
 
 trap 'pkill waybar && hyprctl dispatch exec waybar' EXIT
 
-command=$(cat <<EOF
+kitty --title "System Update" bash -lc "
 fastfetch
 
-printf '[Official]  $ofc\n'
-printf '[AUR]       $aur\n'
-printf '[Flatpak]   $fpk\n'
+printf '[Official]  %d \n' $ofc
+printf '[AUR]       %d \n' $aur
+printf '[Flatpak]   %d \n' $fpk
 
-if (( $ofc > 0 )); then
-  sudo pacman -Syu
-fi
+(( $ofc > 0 )) && sudo pacman -Syu
+(( $aur > 0 )) && $AUR_HELPER -Sua
+(( $fpk > 0 )) && flatpak update --noninteractive
 
-if (( $aur > 0 )); then
-  $AUR_HELPER -Sua
-fi
-
-if (( $fpk > 0 )) && command -v flatpak >/dev/null 2>&1; then
-  flatpak update --noninteractive
-fi
 read -n 1 -p 'Press any key to continue...'
-EOF
-)
-
-kitty --title "System Update" -e bash -c "${command}"
+"

@@ -4,9 +4,23 @@
   "height": 36,
   "spacing": 0,
   "margin": "5 15 0 15",
-  "modules-left": ["custom/separator","custom/arch", "hyprland/workspaces", "custom/cava"],
-  "modules-center": ["custom/updates#icon","custom/updates#text", "hyprland/window", "custom/notification", "idle_inhibitor"],
+  "modules-left": [
+    "custom/separator",
+    "custom/arch",
+    "hyprland/workspaces",
+    "custom/cava",
+    "custom/weather#icon",
+    "custom/weather#text"
+  ],
+  "modules-center": [
+    "custom/updates#icon",
+    "custom/updates#text",
+    "idle_inhibitor",
+    "hyprland/window",
+    "custom/notification"
+  ],
   "modules-right": [
+    "custom/snapper",
     "network#icon",
     "network#text",
     "bluetooth#icon",
@@ -19,7 +33,7 @@
     "tray",
     "custom/separator"
   ],
-  
+
   "custom/separator": {
     "format": "  ",
     "tooltip": false
@@ -36,21 +50,23 @@
   "hyprland/workspaces": {
     "format": "{icon}",
     "format-icons": {
-    "1": "一",
-    "2": "二",
-    "3": "三",
-    "4": "四",
-    "5": "五",
-    "6": "六",
-    "7": "七",
-    "8": "八",
-    "9": "九",
-    "10": "十"
-  },
-  "on-click": "activate",
-  "persistent-workspaces": {
-      		"eDP-1": [1, 2, 3, 9, 10]
-    		}
+      "1": "一",
+      "2": "二",
+      "3": "三",
+      "4": "四",
+      "5": "五",
+      "6": "六",
+      "7": "七",
+      "8": "八",
+      "9": "九",
+      "10": "十"
+    },
+    "on-scroll-up": "hyprctl dispatch workspace +1",
+    "on-scroll-down": "hyprctl dispatch workspace -1",
+    "on-click": "activate",
+    "persistent-workspaces": {
+      "eDP-1": [1, 2, 3, 9, 10]
+    }
   },
 
   "custom/cava": {
@@ -59,7 +75,20 @@
     "hide-empty": true,
     "tooltip": false
   },
-  
+
+  "custom/weather#icon": {
+    "exec": "~/.config/waybar/scripts/weather.sh icon",
+    "interval": 600,
+    "tooltip": false
+  },
+
+  "custom/weather#text": {
+    "exec": "~/.config/waybar/scripts/weather.sh text",
+    "interval": 600,
+    "tooltip": true,
+    "return-type": "json"
+  },
+
   "cpu#icon": {
     "format": "",
     "tooltip": false
@@ -91,35 +120,48 @@
 
   "custom/updates#icon": {
     "format": "{}",
+    "interval": 1800,
     "tooltip": false,
     "exec": "~/.config/waybar/scripts/updator.sh img"
   },
 
   "custom/updates#text": {
-    "format": "{}",
     "exec": "~/.config/waybar/scripts/updator.sh text",
-    "interval": "21600",
-    "tooltip": false,
-    "on-click": "~/.config/waybar/scripts/updator.sh up"
+    "interval": 1800,
+    "tooltip": true,
+    "on-click": "~/.config/waybar/scripts/updator.sh up",
+    "return-type": "json"
+  },
+
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "󰅶",
+      "deactivated": "󰛊"
+    },
+    "tooltip": true,
+    "tooltip-format-activated": "Screen will stay awake",
+    "tooltip-format-deactivated": "Screen can sleep"
   },
 
   "hyprland/window": {
     "format": "{class}",
     "icon": true,
     "rewrite": {
-    "brave-browser": "Brave Browser",
-    "discord": "Discord",
-    "vesktop": "Discord",
-    "kitty": "Kitty",
-    "librewolf": "LibreWolf",
-    "thunar": "Thunar",
-    "polkit-gnome-authentication-agent-1": "Authentication",
-    "^$": "~@"
-  },
+      "brave-browser": "Brave Browser",
+      "discord": "Discord",
+      "vesktop": "Discord",
+      "dev.zed.Zed": "Zed Editor",
+      "kitty": "Kitty",
+      "librewolf": "LibreWolf",
+      "thunar": "Thunar",
+      "polkit-gnome-authentication-agent-1": "Authentication",
+      "^$": "~@"
+    },
     "max-length": 50
   },
 
-    "custom/notification": {
+  "custom/notification": {
     "tooltip": false,
     "format": "{icon}",
     "format-icons": {
@@ -140,15 +182,11 @@
     "escape": true
   },
 
-  "idle_inhibitor": {
-    "format": "{icon}",
-    "format-icons": {
-      "activated": "󰅶",
-      "deactivated": "󰛊"
-    },
-    "tooltip": true,
-    "tooltip-format-activated": "Screen will stay awake",
-    "tooltip-format-deactivated": "Screen can sleep"
+  "custom/snapper": {
+    "exec": "~/.config/waybar/scripts/snapper.sh",
+    "interval": "once",
+    "tooltip": "true",
+    "return-type": "json"
   },
 
   "network#icon": {
@@ -164,6 +202,7 @@
 
   "network#text": {
     "format": "{essid}",
+    "format-ethernet": "Wired",
     "format-disconnected": "Disconnected",
     "format-alt": "<span foreground='#99ffdd'> {bandwidthDownBytes}</span> <span foreground='#ffcc66'> {bandwidthUpBytes}</span>",
     "tooltip": true,
@@ -175,11 +214,10 @@
     "format-disabled": "󰂲",
     "format-connected": "󰂱",
     "tooltip-format": "{status}",
-    "tooltip-format-connected": "Connected to {device_alias}",
+    "tooltip-format-connected": "Connected to {device_alias}: {device_battery_percentage}%",
     "tooltip-format-disabled": "Bluetooth disabled",
     "on-click": "blueman-manager"
   },
-
 
   "battery#icon": {
     "bat": "BAT0",
@@ -212,7 +250,7 @@
     "format-plugged": "{capacity}%",
     "tooltip": true,
     "tooltip-format": "Battery: {capacity}%\nTime remaining: {time}"
-    },
+  },
 
   "pulseaudio#icon": {
     "format": "{icon}",
@@ -230,7 +268,7 @@
     "tooltip": false
   },
 
-   "pulseaudio#text": {
+  "pulseaudio#text": {
     "format": "{volume}%",
     "format-muted": "{volume}%",
     "on-click": "pavucontrol",
@@ -239,36 +277,35 @@
     "tooltip-format": "Volume: {volume}%\nDevice: {desc}"
   },
 
-  "tray": {
-    "icon-size": 18,
-    "spacing": 8,
-    "show-passive-items": true
-  },
-
   "clock#icon": {
     "format": "󰥔",
     "tooltip": false,
     "on-click": "gnome-clocks"
   },
-  
+
   "clock#text": {
     "format": "{:%I:%M %p}",
     "format-alt": "{:%a, %d %b}",
     "signal": 3,
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
     "calendar": {
-      "mode"          : "month",
-      "mode-mon-col"  : 3,
-      "weeks-pos"     : "right",
-      "on-scroll"     : 1,
+      "mode": "month",
+      "mode-mon-col": 3,
+      "weeks-pos": "right",
+      "on-scroll": 1,
       "format": {
-        "months":     "<span color='#ffead3'><b>{}</b></span>",
-        "days":       "<span color='#ecc6d9'>{}</span>",
-        "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
-        "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
-        "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
+        "months": "<span color='#ffead3'><b>{}</b></span>",
+        "days": "<span color='#ecc6d9'>{}</span>",
+        "weeks": "<span color='#99ffdd'><b>W{}</b></span>",
+        "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+        "today": "<span color='#ff6699'><b><u>{}</u></b></span>"
       }
     }
+  },
+
+  "tray": {
+    "icon-size": 18,
+    "spacing": 8,
+    "show-passive-items": true
   }
 }
-
